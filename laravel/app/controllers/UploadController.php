@@ -7,9 +7,16 @@ class UploadController extends \BaseController {
 	 *
 	 * @return Response
 	 */
-	public function index()
-	{
-		//
+
+	protected $layout = 'layouts.default';
+
+
+
+	public function index()	{
+
+	$this->layout->content = View::make('uploads.index');
+			
+		
 	}
 
 
