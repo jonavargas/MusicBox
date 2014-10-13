@@ -5,36 +5,36 @@
 CREATE DATABASE music_box;
 
 
--- Table: file_mp3 --
+-- Table: audio_file --
 
 
-CREATE TABLE file_mp3
+CREATE TABLE audio_file
 (
  id serial NOT NULL,
- file character varying(100),
+ file character varying(200),
  parts integer,
  time_per_chunk time without time zone,
- CONSTRAINT pk_file_mp3 PRIMARY KEY (id)
+ CONSTRAINT pk_audio_file PRIMARY KEY (id)
 );
 
--- Table: queue --
+-- Table: worker --
 
 
-CREATE TABLE queue
+CREATE TABLE worker
 (
  id serial NOT NULL,
  file_path_split character varying(200),
  message_json character varying(200),
- file_mp3_id serial,
+ audio_file_id serial,
  CONSTRAINT pk_queue PRIMARY KEY (id),
- constraint fk_queue_file foreign key (file_mp3_id) references file_mp3 (id)
+ constraint fk_queue_file foreign key (audio_file_id) references audio_file (id)
 );
  
 -- Drop Tables --
 
--- DROP TABLE queue;
+-- DROP TABLE worker;
 
--- DROP TABLE file_mp3;
+-- DROP TABLE audio_file;
 
 
  

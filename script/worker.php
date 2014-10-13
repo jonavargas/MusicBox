@@ -1,6 +1,50 @@
  <?php
-    $audio_file = "file.mp3";
-    $min_duration = '00:01:00.00'; ////////////// Tamaño de partes de audio !!!!!!!!!!!!!!!
+
+//          ****************  Database conection  ***************
+
+    $host = 'localhost';
+    $port = '5432';
+    $dbname = 'aerolinea';
+    $user = 'postgres';
+    $password = '12345';
+
+    $connection_Pg = pg_connect( 'host=' . $host . ' port=' . $port . ' dbname=' . $dbname . ' user=' . $user . ' password=' . $password) or die("Error: Connection to database not found.!!!");
+    $state_connection = pg_connection_status($connection_Pg);
+    
+    if ($state_connection === PGSQL_CONNECTION_OK) {
+        echo 'Connection to database established successfully.' . "\n";
+    }    
+
+    $query = pg_query($connection_Pg, "SELECT id, nombre FROM piloto;") or die("Error in query.!!!");
+    
+    if (!$query) {
+        echo "An error occurred."  . "\n";
+      exit;
+    }
+
+    $br="<br>";
+    $result_query= pg_num_rows($query);
+
+    for ($i=0;$i<$result_query;$i++)
+    {
+
+        $row = pg_fetch_array ($query,$i );        
+    }
+
+    echo $br;
+    echo ' ID: ' . $row["id"] . "\n";
+    echo ' Nombre: ' . $row["nombre"] . "\n";
+    echo $br;
+    
+    pg_close($connection_Pg);
+
+
+//   ************************* Split File ***************************
+
+    $audio_file = "Xanandra.mp3";
+    list($file_name, $ext) = split("[.]", $audio_file);
+
+    $min_duration = '00:01:00.00'; ////////////// Tamaño en minutos de partes de audio !!!!!!!!!!!!!!!
     $start_cut = '00:00:00.00';
     $parts = '0';
  
@@ -25,13 +69,9 @@
         
         for($i=7; $i<strlen($parts_to_duration); $i++){
             $hr = $parts_to_duration[0].$parts_to_duration[1];
-            echo ' HORAS ' . $hr . "\n";//debug    
             $mn = $parts_to_duration[2].$parts_to_duration[3]; //Permite 59
-            echo ' MINUTOS ' . $mn . "\n";//debug
             $sg = $parts_to_duration[4].$parts_to_duration[5];//Permite 59
-            echo ' SEGUNDOS ' . $sg . "\n";//debug
             $ms = $parts_to_duration[6].$parts_to_duration[7];// Permite 99 ms
-            echo ' MICROSEGUNDOS ' . $ms . "\n";//debug
 
             if($sg > 59 && $mn < 60){
                 $sg = $sg - 59;
@@ -80,21 +120,20 @@
             if($parts < 0){
 
                 $partTime = $startCut; // une el tiempo con separadores : desde donde se empieza a cortar 
+                    
                     for($i=7; $i<strlen($partTime); $i++){
-                    $startCut = $partTime[0].$partTime[1].':'.$partTime[2].$partTime[3].':'.$partTime[4].$partTime[5].'.'.$partTime[6].$partTime[7];            
+                        $startCut = $partTime[0].$partTime[1].':'.$partTime[2].$partTime[3].':'.$partTime[4].$partTime[5].'.'.$partTime[6].$partTime[7];            
                 }            
             }
 
             $audio_dur = $audio_dur - $min_dur; 
             $audio_dur = str_pad($audio_dur, '8', '0', STR_PAD_LEFT); //poner ceros al inicio
-            echo ' ** D ***** D ****** D  **** D ***** DURACION AUDIO ' . $audio_dur . "\n";//debug
-
-            echo ' ** MIN ***** MIN ****** MIN  **** MIN ***** MIN DURACION  ' . $min_duration . "\n";//debug
             $audio_dur = str_pad($audio_dur, '8', '0', STR_PAD_LEFT); //poner ceros al inicio 
-            $cmd = shell_exec("ffmpeg -i " . $audio_file . " -acodec copy -t " . $min_duration . " -ss  " . $startCut . ' part' .  $cont . '.mp3');// Linea que divide el codigo
+            $cmd = shell_exec("ffmpeg -i " . $audio_file . " -acodec copy -t " . $min_duration . " -ss  " . $startCut . ' ' . $file_name . '_part' .  $cont . '.' .  $ext);// Linea que divide el codigo
             $startCut = $min_dur * $cont;        
             $startCut = str_pad($startCut, '8', '0', STR_PAD_LEFT); //poner ceros al inicio
             
         } while ($audio_dur > 99); 
     }
+    
 ?>
