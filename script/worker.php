@@ -22,44 +22,67 @@
         $parts=$json["parts"];
         $time_per_chunk=$json["time_per_chunk"];    
     
-        list($none, $none, $none,  $none, $audio_file) = split("[/]", $file); // Obtiene el nombre del archivo de audio
+        list($none, $none, $none, $audio_file) = split("[/]", $file); // Obtiene el nombre del archivo de audio
 
     //  ******************* Convertir minutos a formato reconocido por ffmpeg ********************* 
 
         list($time, $minutes) = split("[ ]", $time_per_chunk);
-
+        $min = $time;
         if($time > 0){
-            $min_duration = $time * 10000;
-            $min_duration = str_pad($min_duration, '8', '0', STR_PAD_LEFT);
-            $get_time = $min_duration;
+            if($time > 60){
+                $hrs = $min / 60;
 
-            if($min_duration > 595999){//*********************************revisar
-                $min_duration = $min_duration - 595999;
+                if(is_float ($hrs)){
+                    $get_minutes = explode( ".", $hrs );
+                    $hrs = $get_minutes[0];
+                    $mn = '0.'.$get_minutes[1];    
+                    $min_decimals = $mn * 60;
+                    var_dump($min_decimals);
+                    $min = round($min_decimals, 0, PHP_ROUND_HALF_UP);// Redondea y elimina decimales
+
+                }else{
+                    $min = '00';
+                    $seg = '00';
+                    $mcs = '00';
+                    $min_duration = $hrs . ':' . $min . ':' . $seg . '.' . $mcs;
+                }
+                $seg = '00';
+                $mcs = '00';
+
+                if($hrs > 10 && $min < 10){
+                    $min_duration = $hrs . ':' . '0' . $min . ':' . $seg . '.' . $mcs;
+                }
+                if($hrs > 10 && $min > 10){
+                    $min_duration = $hrs . ':' . $min . ':' . $seg . '.' . $mcs;
+                }
+                if($hrs < 10 && $min < 10){
+                    $min_duration = '0' . $hrs . ':' . '0' . $min . ':' . $seg . '.' . $mcs;
+                }
+                if($hrs < 10 && $min > 10){
+                    $min_duration = '0' . $hrs . ':' . $min . ':' . $seg . '.' . $mcs;
+                }                
+            }else if($time < 60){
+
+                $min_duration = $time * 10000;
                 $min_duration = str_pad($min_duration, '8', '0', STR_PAD_LEFT);
-            }
+                $get_time = $min_duration;
 
-            for($i=7; $i<strlen($get_time); $i++){ // Convierte los minutos en el formato requerido por el ffmpeg y valida los min y sg
+                for($i=7; $i<strlen($get_time); $i++){ // Convierte los minutos en el formato requerido por el ffmpeg y valida los min y sg
 
-                $hr = $get_time[0] . $get_time[1];
-                $mn = $get_time[2] . $get_time[3];
-                $sg = $get_time[4] . $get_time[5];
-                $ms = $get_time[6] . $get_time[7];
+                    $hr = $get_time[0] . $get_time[1];
+                    $mn = $get_time[2] . $get_time[3];
+                    $sg = $get_time[4] . $get_time[5];
+                    $ms = $get_time[6] . $get_time[7];
 
-                if($sg > 59 && $mn < 60){  //////////// revisar si es necesario!!!!!!!!! *************
-                    $sg = $sg - 59;
-                    $mn = $mn + 1; 
+                    $min_duration = $hr . ':' . $mn . ':' . $sg . '.' . $ms;             
                 }
-                if($mn > 59){
-                    $mn = $mn - 59;
-                    $hr = $hr + 1; 
-                }
-                $min_duration = $hr . ':' . $mn . ':' . $sg . '.' . $ms;             
+                echo 'Duracion: ' . $min_duration;
             }
         } 
 
         list($file_name, $ext) = split("[.]", $audio_file);
         $start_cut = '00:00:00.00';
-        $path_audio_file = "../laravel/public/uploads/";
+        $path_audio_file = "../laravel/uploads/";
         $audio_duration = shell_exec('ffmpeg -i ' . $path_audio_file . $audio_file . ' 2>&1 |grep -oP "[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{2}"');
 
         list($hr, $mn, $sg, $ms) = split("[:.]", $audio_duration);
@@ -72,7 +95,6 @@
         $startCut = $hr . $mn . $sg . $ms;        
         
         if($audio_dur > $min_dur){
-
 
             if($parts > 0){
 
@@ -120,11 +142,11 @@
                             $ms = $startCut[6].$startCut[7];
 
                             if($sg > 59 && $mn < 60){
-                                $sg = $sg - 59;
+                                $sg = $sg - 60;
                                 $mn = $mn + 1; 
                             }
                             if($mn > 59){
-                                $mn = $mn - 59;
+                                $mn = $mn - 60;
                                 $hr = $hr + 1; 
                             }
                         }   
@@ -143,7 +165,6 @@
 
                     $audio_dur = $audio_dur - $min_dur; 
                     $audio_dur = str_pad($audio_dur, '8', '0', STR_PAD_LEFT); //poner ceros al inicio
-                    $audio_dur = str_pad($audio_dur, '8', '0', STR_PAD_LEFT); //poner ceros al inicio 
 
                     $cmd = shell_exec("ffmpeg -i " . $path_audio_file . $audio_file . " -acodec copy -t " 
                     . $min_duration . " -ss  " . $startCut . ' ' . $path_audio_file . $file_name . '_part' 
@@ -159,27 +180,24 @@
             }
         }else{
             echo " ** Error!!! - You must type a quantity of minutes lesser than the duration of the file." . "\n";
-        }
+        }        
 
-        //if($audio_dur > $min_dur){
+	  $host = 'localhost';
+	  $port = '5432';
+	  $dbname = 'music_box';
+	  $user = 'postgres';
+	  $password = '12345';
 
-            $host = 'localhost';
-            $port = '5432';
-            $dbname = 'music_box';
-            $user = 'postgres';
-            $password = '12345';
+	  $connection_Pg = pg_connect( 'host=' . $host . ' port=' . $port . ' dbname=' . $dbname . ' user=' . $user . ' password=' . $password) or die("Error: Connection to database not found.!!!");    
+	  $state_connection = pg_connection_status($connection_Pg);
+	  
+	  if ($state_connection === PGSQL_CONNECTION_OK) {
+	      echo ' ** Connection to database established successfully.' . "\n";
+	  }
 
-            $connection_Pg = pg_connect( 'host=' . $host . ' port=' . $port . ' dbname=' . $dbname . ' user=' . $user . ' password=' . $password) or die("Error: Connection to database not found.!!!");    
-            $state_connection = pg_connection_status($connection_Pg);
-            
-            if ($state_connection === PGSQL_CONNECTION_OK) {
-                echo ' ** Connection to database established successfully.' . "\n";
-            }
-
-            $query = pg_query($connection_Pg, $insert) or die("Error in query.!!!");
-            pg_close($connection_Pg);  
-            echo ' ** Connexion successfully completed.' . "\n";
-       // }
+	  $query = pg_query($connection_Pg, $insert) or die("Error in query.!!!");
+	  pg_close($connection_Pg);  
+	  echo ' ** Connexion successfully completed.' . "\n";      
 
     };
 
