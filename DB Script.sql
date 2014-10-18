@@ -13,7 +13,7 @@ CREATE TABLE audio_file
  id serial NOT NULL,
  file character varying(200),
  parts integer,
- time_per_chunk time without time zone,
+ time_per_chunk character varying(200),
  CONSTRAINT pk_audio_file PRIMARY KEY (id)
 );
 

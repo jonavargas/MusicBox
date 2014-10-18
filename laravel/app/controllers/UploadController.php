@@ -9,26 +9,29 @@ class UploadController extends \BaseController {
 	 */
 
 	protected $layout = 'layouts.default';
-
-
-
 	public function index()	{
 
-	$this->layout->content = View::make('uploads.index');
-			
+		$this->layout->content = View::make('uploads.index');
+		$uploads = Upload::all();
+		$this->layout->titulo = 'Music Box';
+		$this->layout->nest(
+			'content',
+			'uploads.index',
+			array(
+				'uploads' => $uploads
+			)
+		);
 		
-	}
 
+	}
 
 	public function validate(){
 
 		$data = Input::all();
-
 		$rules = array(
 			'file' => 'required',
-			'PARTS'=> 'Integer',
-			'MINUTES'=> 'Integer'
-
+			'parts'=> 'Integer',
+			'time_per_chunk'=> 'Integer'
 			);
 
 		$validate = Validator::make($data, $rules);
@@ -74,7 +77,16 @@ class UploadController extends \BaseController {
 	 */
 	public function store()
 	{
-		//
+		$file = Input::get('file');
+		
+		$parts = Input::get('parts');
+		$minutes = Input::get('time');
+		$upload = new Upload();
+		$upload->file = $file;
+		$upload->parts = $parts;
+		$upload->time_per_chunk = $minutes . ' minutes';
+		$upload->save();
+		return Redirect::to('uploads');
 	}
 
 

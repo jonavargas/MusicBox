@@ -22,7 +22,7 @@
         $parts=$json["parts"];
         $time_per_chunk=$json["time_per_chunk"];    
     
-        list($none, $none,  $none, $audio_file) = split("[/]", $file); // Obtiene el nombre del archivo de audio
+        list($none, $none, $none,  $none, $audio_file) = split("[/]", $file); // Obtiene el nombre del archivo de audio
 
     //  ******************* Convertir minutos a formato reconocido por ffmpeg ********************* 
 
@@ -59,7 +59,7 @@
 
         list($file_name, $ext) = split("[.]", $audio_file);
         $start_cut = '00:00:00.00';
-        $path_audio_file = "../laravel/uploads/";
+        $path_audio_file = "../laravel/public/uploads/";
         $audio_duration = shell_exec('ffmpeg -i ' . $path_audio_file . $audio_file . ' 2>&1 |grep -oP "[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{2}"');
 
         list($hr, $mn, $sg, $ms) = split("[:.]", $audio_duration);
@@ -161,7 +161,7 @@
             echo " ** Error!!! - You must type a quantity of minutes lesser than the duration of the file." . "\n";
         }
 
-        if($audio_dur > $min_dur){
+        //if($audio_dur > $min_dur){
 
             $host = 'localhost';
             $port = '5432';
@@ -179,7 +179,7 @@
             $query = pg_query($connection_Pg, $insert) or die("Error in query.!!!");
             pg_close($connection_Pg);  
             echo ' ** Connexion successfully completed.' . "\n";
-        }
+       // }
 
     };
 
