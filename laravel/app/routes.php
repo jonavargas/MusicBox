@@ -13,7 +13,5 @@
 
 Route::resource('uploads', 'UploadController');
 Route::get('/', 'UploadController@index');
+Route::post('upload_file', 'UploadController@upload_file');
 
-Route::get('upload_file', function(){
-    return View::make('uploads.index');
-});
