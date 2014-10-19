@@ -22,10 +22,13 @@
         $parts=$json["parts"];
         $time_per_chunk=$json["time_per_chunk"];    
     
-        list($none, $none, $none, $audio_file) = split("[/]", $file); // Obtiene el nombre del archivo de audio
+
+
+        list($none, $folder_name, $audio_file) = split("[/]", $file); // Obtiene el nombre del archivo de audio
+    
 
     //  ******************* Convertir minutos a formato reconocido por ffmpeg ********************* 
-
+        
         list($time, $minutes) = split("[ ]", $time_per_chunk);
         $min = $time;
         if($time > 0){
@@ -82,7 +85,7 @@
 
         list($file_name, $ext) = split("[.]", $audio_file);
         $start_cut = '00:00:00.00';
-        $path_audio_file = "../laravel/uploads/";
+        $path_audio_file = "../laravel/uploads/" . $folder_name . '/';
         $audio_duration = shell_exec('ffmpeg -i ' . $path_audio_file . $audio_file . ' 2>&1 |grep -oP "[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{2}"');
 
         list($hr, $mn, $sg, $ms) = split("[:.]", $audio_duration);
@@ -95,7 +98,7 @@
         $startCut = $hr . $mn . $sg . $ms;        
         
         if($audio_dur > $min_dur){
-
+            $db = true;
             if($parts > 0){
 
                 $parts = $audio_dur / $parts;
@@ -180,24 +183,26 @@
             }
         }else{
             echo " ** Error!!! - You must type a quantity of minutes lesser than the duration of the file." . "\n";
+        }   
+
+        if($db = true){
+            $host = 'localhost';
+            $port = '5432';
+            $dbname = 'music_box';
+            $user = 'postgres';
+            $password = '12345';
+
+            $connection_Pg = pg_connect( 'host=' . $host . ' port=' . $port . ' dbname=' . $dbname . ' user=' . $user . ' password=' . $password) or die("Error: Connection to database not found.!!!");    
+            $state_connection = pg_connection_status($connection_Pg);
+
+            if ($state_connection === PGSQL_CONNECTION_OK) {
+              echo ' ** Connection to database established successfully.' . "\n";
+            }
+
+            $query = pg_query($connection_Pg, $insert) or die("Error in query.!!!");
+            pg_close($connection_Pg);  
+            echo ' ** Connexion successfully completed.' . "\n";          
         }        
-
-	  $host = 'localhost';
-	  $port = '5432';
-	  $dbname = 'music_box';
-	  $user = 'postgres';
-	  $password = '12345';
-
-	  $connection_Pg = pg_connect( 'host=' . $host . ' port=' . $port . ' dbname=' . $dbname . ' user=' . $user . ' password=' . $password) or die("Error: Connection to database not found.!!!");    
-	  $state_connection = pg_connection_status($connection_Pg);
-	  
-	  if ($state_connection === PGSQL_CONNECTION_OK) {
-	      echo ' ** Connection to database established successfully.' . "\n";
-	  }
-
-	  $query = pg_query($connection_Pg, $insert) or die("Error in query.!!!");
-	  pg_close($connection_Pg);  
-	  echo ' ** Connexion successfully completed.' . "\n";      
 
     };
 
