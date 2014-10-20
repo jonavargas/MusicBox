@@ -29,35 +29,6 @@ class UploadController extends \BaseController {
 	}
 
 
-	public function validate(){
-
-	$data = Input::all();
-	$rules = array(
-		'file' => 'required',
-		'parts'=> 'Integer',
-		'time_per_chunk'=> 'Integer'
-		);
-
-	$validate = Validator::make($data, $rules);
-
-	if ($validate->fails()) {
-        return Redirect::to('uploads')
-            ->withErrors($validate);
-	}
-	return dd($data);
-
-
-		/**if($radio_btn == 'parts'){
-			$validator = Validator::make(
-    		array('radio_btn' => 'required|min:1')
-    		);
-		}
-		else if($radio_btn == 'minutes'){
-			$validator = Validator::make(
-    		array('radio_btn' => 'required|min:1')
-    		);
-		}*/
-	}
 
 	
 	public function upload_file(){
@@ -67,27 +38,27 @@ class UploadController extends \BaseController {
 				
 		$filename = $file->getClientOriginalName();
 
-//
-		$query = DB::Select("SELECT id FROM audio_file ORDER BY id DESC LIMIT 1");
-		$id = $query[0]->id;
-		$id = $id + 1;
-
+		try
+		{
+		    $query = DB::Select("SELECT id FROM audio_file ORDER BY id DESC LIMIT 1");
+			$id = $query[0]->id;
+			$id = $id + 1;
+		}
+		catch(Exception $ex)
+		{
+		    $id = 1;
+		}
 
 		$get_name = explode( ".", $filename );
 		$name = $get_name[0];
 		$name_folder = $this->replace_white_spaces($name);		
 		$name_folder = $name_folder . $id;
-///
-		//$destinationPath = __DIR__.'/../../uploads/' . $name_folder . '/';
+
 		$destinationPath = 'uploads/' . $name_folder . '/';
-
-
-
 		$extension =$file->getClientOriginalExtension(); 
 		$new_name = $this->replace_white_spaces($filename);
-		$uploadSuccess = Input::file('file')->move($destinationPath, $new_name);
-		
 
+		$uploadSuccess = Input::file('file')->move($destinationPath, $new_name);
 		$file_upload_type = $file->getClientMimeType();//Obtiene el formato del archivo seleccionado
 		$ext_supported = array('audio/m4a', 'audio/mp2', 'audio/mp3', 'audio/wav');//Valida los formatos soportados
 
@@ -152,14 +123,9 @@ class UploadController extends \BaseController {
 		$channel = $connection->channel();
 		$channel->queue_declare('split_file', false, false, false, false);
 
-		//$msg = new AMQPMessage('{"id":"$id", "file": "$file_path", "parts": "$parts", "time_per_chunk": "$minutes"}');
-		
 		$msg = array("id" => "$id","file" => "$file_path","parts" => "$parts","time_per_chunk" => "$minutes . ' minutes'");
 		$push = json_encode($msg);
-		//$msg = '{"id":"$id", "file": "$file_path", "parts": "$parts", "time_per_chunk": "$minutes"}';
-		//return var_dump($msg);
 		$push = new AMQPMessage($push);
-
 
 		$channel->basic_publish($push, '', 'split_file');
 		$channel->close();

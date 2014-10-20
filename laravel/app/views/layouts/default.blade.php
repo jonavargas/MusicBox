@@ -1,14 +1,16 @@
 <!DOCTYPE html>
-<html>
-<head>
-	<title></title>
-	
+<head>	
+	{{HTML::script('js/jquery-2.1.1.min.js')}}
+	{{HTML::style('bootstrap/css/bootstrap.min.css')}}
+	{{HTML::style('bootstrap/css/style.css')}}
+
+	<div>
+		<title >Music Box</title>   
+		
+	</div>
 </head>
 <body>
-	<h1>Music Box</h1>
-	
-	{{ $content }}
-
-	
-	</body>
+	{{$content}}
+	{{HTML::script('bootstrap/js/bootstrap.min.js')}}
+</body>
 </html>

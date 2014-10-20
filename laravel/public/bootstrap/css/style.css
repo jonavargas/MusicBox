@@ -1,0 +1,57 @@
+*{
+	background: #f3e2c7;
+}
+
+body{
+	background:  #f3e2c7;
+}
+
+h1{
+font-size: 40px;
+text-align: center;
+background: #f9c667; /* Old browsers */
+background: -moz-linear-gradient(top, #f9c667 0%, #f79621 100%); /* FF3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f9c667), color-stop(100%,#f79621)); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(top, #f9c667 0%,#f79621 100%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(top, #f9c667 0%,#f79621 100%); /* Opera 11.10+ */
+background: -ms-linear-gradient(top, #f9c667 0%,#f79621 100%); /* IE10+ */
+background: linear-gradient(to bottom, #f9c667 0%,#f79621 100%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f9c667', endColorstr='#f79621',GradientType=0 ); /* IE6-9 */
+width: 80%;
+margin-left: 10%;
+margin-right: 10%;
+color: #402E2E;
+font-family: Comic Sans MS;
+font-style: italic;
+border-style: dotted solid dashed double;
+}
+.file{
+	margin-left: 48%;
+	margin-top: -2.5%;
+	font-size: 1.2em;
+}
+.form{
+
+	text-align: center;
+}
+.img {
+   
+
+}
+.lblFile{
+	margin-left: -20%;
+	margin-top: 6%;
+	font-size: 1.2em;
+}
+.parts{
+	margin
+}
+
+.title{
+	margin-bottom: 2%;
+	margin-top: 1%;
+	background: #f3e2c7;
+}
+
+
+

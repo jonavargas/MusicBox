@@ -1,30 +1,69 @@
-{{ Form::open(array('url' => 'uploads' , 'files'=>true)) }}
+<!DOCTYPE html>
+<head>	
+	{{HTML::script('js/jquery-2.1.1.min.js')}}
+	{{HTML::style('bootstrap/css/bootstrap.min.css')}}
+	{{HTML::style('bootstrap/css/style.css')}}
 
-	{{ Form::label('file','File',array('id'=>'','class'=>'')) }}
-  	{{ Form::file('file','',array('id'=>'file','class'=>'file')) }}
-  	<br>
+	<div>
+		<title >Music Box</title>   		
+	</div>
+</head>
+<body>	
+	<div class="title">
+		<h1>Music Box</h1>
+    </div>
+    <div class="form">
+    	{{ Form::open(array('url' => 'uploads' , 'files'=>true )) }}
+    	<div class="lblFile">
+    		{{ Form::label('file','Select your audio file:',array('id'=>'','class'=>'')) }}
+    	
+    	</div>
+    	<div class ="file">
+ 			{{ Form::file('file','',array('id'=>'file','class'=>'file')) }}		
+		</div>
+		<div class= "parts">
+			{{Form::radio('radioBtn', 'Parts', array('id'=>'parts'))}}	
+			{{ Form::label('lblparts','Parts',array('id'=>'lblparts','class'=>'lblparts')) }}
+			<input type="text" name="parts" onkeypress="return solonumeros(e)">				
+		</div>
+		<div>
+					
+		</div>
+		<div>
+			
+			
+		</div>
+		<div>
+			
+		</div>
+  	
+  	
 
-	{{ Form::label('parts','Parts',array('id'=>'lblparts','class'=>'lblparts')) }}
-	{{ Form::text('parts', '') }}
+  	
+	
+	
+	
 	
 	<br>	   
   
-  	{{ Form::label('minutes', 'Minutes') }}
-	{{ Form::text('minutes', '') }}
-	
+  	{{Form::radio('radioBtn', 'Minutes')}}
+  	{{ Form::label('lblminutes', 'Minutes') }}
+	{{ Form::text('minutes', '') }}	
 	<br>
-
-	<!-- 	Codigo de Validar los campos, aunn no esta implementado -->
-	@if ($errors->has())
-                    <div class="alert-danger text-center" role="alert">
-                        <small>{{ $errors->first('file') }}</small>
-                        <small>{{ $errors->first('parts') }}</small>
-                        <small>{{ $errors->first('minutes') }}</small>
-                    </div>
-	@endif
-
-
-	{{Form::submit('Split', array())}}
-
+	
+	<input type="submit" id="submit" value="Slipt">
 {{ Form::close() }}
+
+    	
+    </div>
+    
+
+	
+</body>
+</html>
+
+
+
+
+{{HTML::script('js/index.js')}}
 

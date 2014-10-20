@@ -144,11 +144,11 @@
                             $sg = $startCut[4].$startCut[5];
                             $ms = $startCut[6].$startCut[7];
 
-                            if($sg > 59 && $mn < 60){
+                            if($sg > 59 && $mn < 60){//Valida los segundos si exceden los 60 segundos aumenta en 1 los minutos
                                 $sg = $sg - 60;
                                 $mn = $mn + 1; 
                             }
-                            if($mn > 59){
+                            if($mn > 59){//Valida los minutos si exceden los 60 minutos aumenta en 1 las horas
                                 $mn = $mn - 60;
                                 $hr = $hr + 1; 
                             }
@@ -157,35 +157,42 @@
                         $startCut = $hr . ':' . $mn . ':' . $sg . '.' . $ms;   
                     }
 
+                    /*
                     if($parts < 0){
 
-                        $partTime = $startCut; // une el tiempo con separadores : desde donde se empieza a cortar 
+                        $partTime = $startCut; //Une el tiempo con separadores, y este indica desde donde se empieza a cortar 
                             
                             for($i=7; $i<strlen($partTime); $i++){
                                 $startCut = $partTime[0].$partTime[1].':'.$partTime[2].$partTime[3].':'.$partTime[4].$partTime[5].'.'.$partTime[6].$partTime[7];            
                             }            
-                    }
+                    }*/
 
                     $audio_dur = $audio_dur - $min_dur; 
-                    $audio_dur = str_pad($audio_dur, '8', '0', STR_PAD_LEFT); //poner ceros al inicio
+                    $audio_dur = str_pad($audio_dur, '8', '0', STR_PAD_LEFT); //Pone ceros al inicio de la variable, para conservar el tamaño total de 8 digitos
+
+                    if($cont < 10 && $cont > 0){//Asigna un cero a el número de parte
+                        $num_part = '0' . $cont;
+                    }else{
+                        $num_part = $cont;
+                    }
+
+                    $name = $path_audio_file . $file_name . '_part_' . $num_part . "." . $ext;
 
                     $cmd = shell_exec("ffmpeg -i " . $path_audio_file . $audio_file . " -acodec copy -t " 
-                    . $min_duration . " -ss  " . $startCut . ' ' . $path_audio_file . $file_name . '_part' 
-                    .  $cont . '.' .  $ext);// Linea que divide el archivo de audio
-                    
-                    $name = $file_name . '_part' . $cont . "." . $ext;
+                    . $min_duration . " -ss  " . $startCut . ' ' . $name);// Comando que divide el archivo de audio                    
 
-                    $insert .= "INSERT INTO worker(file_path_split, audio_file_id)VALUES (" . "'" . $name . "'" . ', ' . $id . " ); ";
-                    $startCut = $min_dur * $cont;        
-                    $startCut = str_pad($startCut, '8', '0', STR_PAD_LEFT); //poner ceros al inicio
+                    $insert .= "INSERT INTO download_links(file_path_split, audio_file_id)VALUES (" . "'" . $name . "'" . ', ' . $id . " ); ";
+
+                    $startCut = $min_dur * $cont;//Se multiplica la duracion por el contador, para indicar desde donde se incia el siguiente corte     
+                    $startCut = str_pad($startCut, '8', '0', STR_PAD_LEFT); //Pone ceros al inicio de la variable, para conservar el tamaño total de 8 digitos
                     
-                } while ($audio_dur > 1099); 
+                } while ($audio_dur > 1099); // El ciclo se mantiene mientras que la duración del audio se mayoa a 00:00:10.99
             }
         }else{
             echo " ** Error!!! - You must type a quantity of minutes lesser than the duration of the file." . "\n";
         }   
 
-        if($db = true){
+        if($db = true){ //Se establece la conexión a la base de datos
             $host = 'localhost';
             $port = '5432';
             $dbname = 'music_box';

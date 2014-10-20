@@ -17,10 +17,10 @@ CREATE TABLE audio_file
  CONSTRAINT pk_audio_file PRIMARY KEY (id)
 );
 
--- Table: worker --
+-- Table: download_links --
 
 
-CREATE TABLE worker
+CREATE TABLE download_links
 (
  id serial NOT NULL,
  file_path_split character varying(2000),
@@ -31,7 +31,7 @@ CREATE TABLE worker
  
 -- Drop Tables --
 
--- DROP TABLE worker;
+-- DROP TABLE download_links;
 
 -- DROP TABLE audio_file;
 
