@@ -12,5 +12,6 @@
 <body>
 	{{$content}}
 	{{HTML::script('bootstrap/js/bootstrap.min.js')}}
+	{{HTML::script('js/index.js')}}
 </body>
 </html>

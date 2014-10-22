@@ -24,55 +24,56 @@ class UploadController extends \BaseController {
 				'uploads' => $uploads
 			)
 		);
-
-
 	}
-
-
-
 	
-	public function upload_file(){
+	public function upload_file(){		
+
+		$file = Input::file('file');				
 		
+		if( $file== null){
+			return Redirect::to('/');
+		}
 
-		$file = Input::file('file');
-				
+		$extension=$file->getClientOriginalExtension();
+		$ext = $extension;
+
+		if(($ext !="wma")&&($ext !="mp3")&& ($ext !="mp2"))
+		{
+			return Redirect::to('/');
+			
+		}
 		$filename = $file->getClientOriginalName();
-
 		try
-		{
-		    $query = DB::Select("SELECT id FROM audio_file ORDER BY id DESC LIMIT 1");
-			$id = $query[0]->id;
-			$id = $id + 1;
-		}
-		catch(Exception $ex)
-		{
-		    $id = 1;
-		}
+			{
+		    	$query = DB::Select("SELECT id FROM audio_file ORDER BY id DESC LIMIT 1");
+				$id = $query[0]->id;
+				$id = $id + 1;
+			}
+			catch(Exception $ex)
+			{
+		   		$id = 1;
+			}
 
-		$get_name = explode( ".", $filename );
-		$name = $get_name[0];
-		$name_folder = $this->replace_white_spaces($name);		
-		$name_folder = $name_folder . $id;
+			$get_name = explode( ".", $filename );
+			$name = $get_name[0];
+			$name_folder = $this->replace_white_spaces($name);		
+			$name_folder = $name_folder . $id;
 
-		$destinationPath = 'uploads/' . $name_folder . '/';
-		$extension =$file->getClientOriginalExtension(); 
-		$new_name = $this->replace_white_spaces($filename);
+			$destinationPath = 'uploads/' . $name_folder . '/';
+			$extension =$file->getClientOriginalExtension(); 
+			$new_name = $this->replace_white_spaces($filename);
 
-		$uploadSuccess = Input::file('file')->move($destinationPath, $new_name);
-		$file_upload_type = $file->getClientMimeType();//Obtiene el formato del archivo seleccionado
-		$ext_supported = array('audio/m4a', 'audio/mp2', 'audio/mp3', 'audio/wav');//Valida los formatos soportados
-
-		if( $uploadSuccess) {// validar extension con las declaradas en el array
+			$uploadSuccess = Input::file('file')->move($destinationPath, $new_name);
+		
+			if( $uploadSuccess) {// validar extension con las declaradas en el array
    			
-   			return $destinationPath . $new_name;  
+   				return $destinationPath . $new_name;  
 
-		} else if(!in_array($file_upload_type, $ext_supported)){
-   			echo "<p class='error_message'>File format not supported, try another file</p>";
-	        return View::make('uploads.index');
-		}
-
-	}
-	
+			} else if(!in_array($file_upload_type, $ext_supported)){
+   				echo "<p class='error_message'>File format not supported, try another file</p>";
+	        	return View::make('uploads.index');
+			}
+	}		
 
 	public function replace_white_spaces($file){
 		
@@ -81,20 +82,8 @@ class UploadController extends \BaseController {
 		$file = preg_replace("/[\s-]+/", " ", $file);//Elimina espacios en blanco multiples y barras inclinadas
 		$file = preg_replace("/[\s_]/", "", $file);//Combierte los espacios en blanco en guiones
 		return $file;
-	}
+	}	
 	
-	
-	/**
-	 * Show the form for creating a new resource.
-	 *
-	 * @return Response
-	 */
-	public function create()
-	{
-		//
-	}
-
-
 	/**
 	 * Store a newly created resource in storage.
 	 *
@@ -130,53 +119,6 @@ class UploadController extends \BaseController {
 		$channel->basic_publish($push, '', 'split_file');
 		$channel->close();
 		$connection->close();
-	}
-
-	/**
-	 * Display the specified resource.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function show($id)
-	{
-		//
-	}
-
-
-	/**
-	 * Show the form for editing the specified resource.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function edit($id)
-	{
-		//
-	}
-
-
-	/**
-	 * Update the specified resource in storage.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function update($id)
-	{
-		//
-	}
-
-
-	/**
-	 * Remove the specified resource from storage.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function destroy($id)
-	{
-		//
 	}
 
 

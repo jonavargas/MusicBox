@@ -1,7 +1,33 @@
+	{{HTML::style('bootstrap/css/bootstrap.min.css')}}
+	{{HTML::style('bootstrap/css/style.css')}}
 
 'use strict';
 
 $(document).ready(function() {
+    $('#fileForm').bootstrapValidator({
+        feedbackIcons: {
+            valid: 'glyphicon glyphicon-ok',
+            invalid: 'glyphicon glyphicon-remove',
+            validating: 'glyphicon glyphicon-refresh'
+        },
+        fields: {
+            split: {
+                validators: {
+                    file: {
+                        extension: 'mp3,m4a',
+                        type: 'audio/mpeg,audio/x-m4a',
+                        message: 'The selected file is not valid'
+                    }
+                }
+            }
+        }
+    });
+});
+
+
+
+
+/**$(document).ready(function() {
 	disabled_texts();
 	solonumeros(e);
 
@@ -10,16 +36,17 @@ $(document).ready(function() {
 		//print_values();
 		//hide_elements();
 		/* Act on the event */
-	});
-});
+	//});
+//});
 	
-
-	function disabled_texts() {
+/**public function disabled_texts() {
 		document.getElementById("#parts").disabled = true;
     	document.getElementById("minutes").disabled = true;
 	}
-	
-	function solonumeros(e){
+
+
+		
+	public function solonumeros(e){
 		var key=e.keyCode || e.which;
 		var teclado=String.fromCharCode(key).toLowerCase();
 		var numeros="0123456789";
@@ -54,18 +81,10 @@ $(document).ready(function() {
             ->withErrors($validate);
 	}
 	return dd($data);
+	**/
 
 
-		/**if($radio_btn == 'parts'){
-			$validator = Validator::make(
-    		array('radio_btn' => 'required|min:1')
-    		);
-		}
-		else if($radio_btn == 'minutes'){
-			$validator = Validator::make(
-    		array('radio_btn' => 'required|min:1')
-    		);
-		}*/
-	}
+	
+
 
 
